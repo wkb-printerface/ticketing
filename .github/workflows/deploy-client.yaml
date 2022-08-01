@@ -1,25 +1,25 @@
-name: deploy-auth
+name: deploy-client
 on:
     push:
         branches: 
             - master 
         paths: 
-            - 'auth/**'
+            - 'client/**'
 jobs: 
     build:
         runs-on: ubuntu-latest 
         steps: 
             - uses: actions/checkout@v2 
-            - run: cd auth && docker build -t wiers/auth .
+            - run: cd client && docker build -t wiers/client .
             - 
               name: Login to Docker Hub
               uses: docker/login-action@v1
               with: 
                  username: ${{ secrets.DOCKER_USERNAME }}
                  password: ${{ secrets.DOCKERHUB_TOKEN }} 
-            - run: docker push wiers/auth
+            - run: docker push wiers/client
             - uses: digitalocean/action-doctl@v2
               with:
                 token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
             - run: doctl kubernetes cluster kubeconfig save k8s-1-23-9-do-0-ams3-1659093049827
-            - run: kubectl rollout restart deployment auth-depl
+            - run: kubectl rollout restart deployment client-depl
